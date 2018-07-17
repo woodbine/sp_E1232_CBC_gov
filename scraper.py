@@ -86,7 +86,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E1232_CBC_gov"
-url = "https://www.dorsetforyou.gov.uk/article/400366/Payments-to-suppliers---Christchurch-Borough-Council"
+url = "https://www.dorsetforyou.gov.uk/your-council/about-your-council/budgets-and-spending/open-data-and-transparency/payments-to-suppliers-christchurch-borough-council.aspx"
 errors = 0
 data = []
 
@@ -98,23 +98,23 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-links = soup.find('div', id='download').find_all('li')
+links = soup.find('main', id='main').find_all('li')
 for link in links:
     if 'http' not in link.find('a')['href']:
-        url = 'https://www.dorsetforyou.gov.uk' + link.find('a')['href'][1:]
+        url = 'https://www.dorsetforyou.gov.uk/' + link.find('a')['href'][1:]
     else:
         url = link.find('a')['href'][1:]
     if '.xlsx' in url or '.xls' in url or '.csv' in url:
-        file_name = link.text.split('\n')[2].strip()
-        csvYr = '20'+file_name[-2:]
-        if 'JAN - MAR' in file_name:
+        file_name = link.text.strip()
+        csvYr = link.text.strip()[-4:]
+        if 'Q4' in file_name:
             csvMth = 'Q1'
-        if 'APR - JUN' in file_name:
-            csvMth = 'Q2'
-        if 'JUL - SEP' in file_name:
-            csvMth = 'Q3'
-        if 'OCT - DEC' in file_name:
+        if 'Q3' in file_name:
             csvMth = 'Q4'
+        if 'Q2' in file_name:
+            csvMth = 'Q3'
+        if 'Q1' in file_name:
+            csvMth = 'Q2'
         csvMth = convert_mth_strings(csvMth.upper())
         data.append([csvYr, csvMth, url])
 
